@@ -1,4 +1,4 @@
-import User from "../models/user.model"
+import User from "../models/user.model.js"
 
 export const registerUser = async(req, res) =>{
 
@@ -23,7 +23,8 @@ export const registerUser = async(req, res) =>{
             return res.status(400).json({message: 'password length should be greater than 6 character'})
         }
 
-        User.create({username, name, password, email})
+        const User = User.create({username, name, password, email})
+        res.send(newUser)
     }
     catch{
 
