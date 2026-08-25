@@ -2,6 +2,12 @@ import User from "../models/user.model.js"
 import bcrypt from 'bcrypt'
 import genToken from "../utils/genToken.js"
 
+const cookieOptions = {
+    httpOnly : true
+    // we have to avoid xss and csrf attacks
+
+}
+
 export const registerUser = async(req, res) =>{
 
     const {name, username, email, password} = req.body
@@ -32,7 +38,7 @@ export const registerUser = async(req, res) =>{
 
         // Generate JWT 
         const token = genToken(newUser._id)
-        //console.log(token)
+        res.cookie("token", token, cookieOptions)
 
         res.status(201).json(newUser)
     }
@@ -60,8 +66,15 @@ export const loginUser = async(req, res) =>{
             return res.status(401).json({message: 'User Not Found'})
         }
 
+        const token = genToken(userExists._id)
+        res.cookie('token', token, cookieOptions)
+
         res.status(200).json({message: 'Login Successful', user: userExists})
     } catch (error) {
         return res.status(500).json({message: 'Internal Server Error'})
     }
+}
+
+export const getUser = (req, res) => {
+    res.status(200).json(req.user)
 }
